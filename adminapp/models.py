@@ -12,7 +12,7 @@ class Bookstbl(models.Model):
     IssuedCopies = models.IntegerField()	
     TotalCopies	= models.IntegerField()
     Book_cover = models.ImageField(upload_to='book_covers',default='-')
-    isbook = models.BooleanField()
+    isebook = models.BooleanField(default=False)
     Pdf_file = models.FileField(storage=fs,default='-')
     admin = models.ForeignKey('Adminstbl', verbose_name=(""), on_delete=models.CASCADE)
 	
@@ -24,7 +24,7 @@ class Adminstbl(models.Model):
     Address = models.CharField(max_length=80,default='-')
     Birthday = models.DateField(default=date.today())
     Joining_date = models.DateField(default=date.today())
-    Profile_pic = models.ImageField(upload_to='profile_pic',default='-')
+    Profile_pic = models.ImageField(default='-')
     adminEmail = models.CharField(max_length=50, primary_key=True)
     Password = models.CharField(max_length=50)
     Orgnization = models.CharField(max_length=50)

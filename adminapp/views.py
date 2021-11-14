@@ -1,6 +1,7 @@
 from django.shortcuts import render, HttpResponse,redirect
 from .models import Bookstbl,Adminstbl,Userstbl
 from django.contrib.sessions.models import Session
+from django.contrib import messages
 # Create your views here.
 def index(request):
     return render(request,'login.html')
@@ -178,13 +179,17 @@ def completeprofile(request):
         return redirect('/logout')
     else:
         if request.method == "POST":
-            image = request.POST.get('image')
+            # image = request.POST.get('image')
             address = request.POST.get('address')
             gender = request.POST.get('gender')
             birthday = request.POST.get('birthday')
             mobile = request.POST.get('mobile')
             useremail = request.session['username']
             isadmin = request.session['isadmin']
+            if len(request.FILES) != 0:
+                image = request.FILES['image']
+            else:
+                image='-'
             try: 
                 if(isadmin):
                     user = Adminstbl.objects.get(adminEmail=useremail)
@@ -197,5 +202,6 @@ def completeprofile(request):
             user.Gender = gender
             user.Birthday = birthday
             user.Mobile = mobile
+            messages.success(request,"Profile Updated")
             user.save()
         return redirect('/account')
