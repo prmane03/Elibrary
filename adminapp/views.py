@@ -81,12 +81,14 @@ def dashboard(request):
             isadmin = request.session['isadmin']
             if(isadmin): 
                 Admin = Adminstbl.objects.get(adminEmail=username)
-                Books = Bookstbl.objects.filter(admin=Admin)
-                return render(request,'dashboard.html',{'Books':Books,'User':Admin})
+                Books = Bookstbl.objects.filter(admin=Admin,isebook=False)
+                Ebooks = Bookstbl.objects.filter(admin=Admin,isebook=True)
+                return render(request,'dashboard.html',{'Ebooks':Ebooks,'Books':Books,'User':Admin})
             else:
                 User = Userstbl.objects.get(userEmail=username)
-                Books = Bookstbl.objects.filter(admin=User.admin)
-                return render(request,'dashboard.html',{'Books':Books,'User':User})
+                Books = Bookstbl.objects.filter(admin=User.admin,isebook=False)
+                Ebooks = Bookstbl.objects.filter(admin=User.admin,isebook=True)
+                return render(request,'dashboard.html',{'Ebooks':Ebooks,'Books':Books,'User':User})
     
 def account(request):
     if(not request.session.has_key("islogged")):
@@ -137,11 +139,16 @@ def addbook(request):
             category = request.POST.get('category')
             tcopies = request.POST.get('tcopies')
             useremail = request.session['username']
+            isebook = request.POST.get('isebook',False)
             try: 
                 admin = Adminstbl.objects.get(adminEmail=useremail)
             except Exception as e:
                 return HttpResponse(e)
-            Book = Bookstbl(Name=name,Publication=publication,Author=author,Category=category,AvailableCopies=tcopies,IssuedCopies=0,TotalCopies=tcopies,admin=admin);
+            if 'isebook' in request.POST:
+                ebook = request.FILES['pdfebook']
+                Book = Bookstbl(Name=name,Publication=publication,Author=author,Category=category,AvailableCopies=1,IssuedCopies=0,TotalCopies=1,admin=admin,isebook=True,Pdf_file=ebook);
+            else:
+                Book = Bookstbl(Name=name,Publication=publication,Author=author,Category=category,AvailableCopies=tcopies,IssuedCopies=0,TotalCopies=tcopies,admin=admin);
             Book.save()
         return redirect('/dashboard')
 
@@ -151,26 +158,34 @@ def updatebook(request):
         return redirect('/logout')
     else:
         if request.method == "POST":
+            isebook = request.POST.get('isebook')
             book_id = request.POST.get('book_id')[1:]
             name = request.POST.get('name')
             publication = request.POST.get('publication')
             author = request.POST.get('author')
             category = request.POST.get('category')
-            tcopies = request.POST.get('tcopies')
             useremail = request.session['username']
+
             try: 
                 admin = Adminstbl.objects.get(adminEmail=useremail)
             except Exception as e:
                 return HttpResponse(e)
             
+
             Book = Bookstbl.objects.get(id=book_id,admin=admin);
             Book.Name = name
             Book.Publication = publication
             Book.Author = author
             Book.Category = category
-            Book.AvailableCopies = tcopies
-            Book.IssuedCopies = 0
-            Book.TotalCopies = tcopies
+            if  isebook == 'false':
+                Book.AvailableCopies = request.POST.get('tcopies')
+                Book.IssuedCopies = 0
+                Book.TotalCopies = request.POST.get('tcopies')
+            else :
+                if request.FILES['update_ebook']:
+                    Book.Pdf_file = request.FILES['update_ebook']
+                else:
+                    messages.warning(request,"Couldn't Update Book")
             Book.save()
         return redirect('/dashboard')
 

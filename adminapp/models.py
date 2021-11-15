@@ -1,8 +1,8 @@
 from django.db import models
-from django.core.files.storage import FileSystemStorage
+# from django.core.files.storage import FileSystemStorage
 from datetime import date
 # Create your models here.
-fs = FileSystemStorage(location="/media/ebook")
+# fs = FileSystemStorage(location="/media/ebook")
 class Bookstbl(models.Model):
     Name = models.CharField(max_length=50)	
     Publication	= models.CharField(max_length=50)	
@@ -13,7 +13,8 @@ class Bookstbl(models.Model):
     TotalCopies	= models.IntegerField()
     Book_cover = models.ImageField(upload_to='book_covers',default='-')
     isebook = models.BooleanField(default=False)
-    Pdf_file = models.FileField(storage=fs,default='-')
+    Pdf_file = models.FileField(upload_to='ebook',default='-')
+    # Pdf_file = models.FileField(storage=fs,default='-')
     admin = models.ForeignKey('Adminstbl', verbose_name=(""), on_delete=models.CASCADE)
 	
         
