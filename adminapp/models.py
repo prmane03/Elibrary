@@ -24,7 +24,7 @@ class Adminstbl(models.Model):
     Address = models.CharField(max_length=80,default='-')
     Birthday = models.DateField(default=date.today())
     Joining_date = models.DateField(default=date.today())
-    Profile_pic = models.ImageField(default='-')
+    Profile_pic = models.ImageField(upload_to='admin_profile_pic',default='-')
     adminEmail = models.CharField(max_length=50, primary_key=True)
     Password = models.CharField(max_length=50)
     Orgnization = models.CharField(max_length=50)

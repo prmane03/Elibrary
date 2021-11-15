@@ -139,9 +139,6 @@
                         <img class="h-auto w-full mx-auto"
                             src="{{User.Profile_pic.url}}"
                             alt="">
-                        {% comment %} <img class="h-auto w-full mx-auto"
-                            src="https://lavinephotography.com.au/wp-content/uploads/2017/01/PROFILE-Photography-112.jpg"
-                            alt=""> {% endcomment %}
                     </div>
                     <h1 class="text-gray-900 font-bold text-xl leading-8 my-1">{{User.Name}}</h1>
                     <h3 class="text-gray-600 font-lg text-semibold leading-6">
@@ -151,11 +148,7 @@
                     {{User.admin.Orgnization}}
                     {% endif %}
                     </h3>
-                    <p class="text-sm text-gray-500 hover:text-gray-600 leading-6">Lorem ipsum dolor sit amet
-                        consectetur adipisicing elit.
-                        Reprehenderit, eligendi dolorum sequi illum qui unde aspernatur non deserunt</p>
-                    <ul
-                        class="bg-gray-100 text-gray-600 hover:text-gray-700 hover:shadow py-2 px-3 mt-3 divide-y rounded shadow-sm">
+                    <ul class="bg-gray-100 text-gray-600 hover:text-gray-700 hover:shadow py-2 px-3 mt-3 divide-y rounded shadow-sm">
                         <li class="flex items-center py-3">
                             <span>Status</span>
                             <span class="ml-auto"><span
@@ -176,15 +169,112 @@
                 <!-- Profile tab -->
                 <!-- About Section -->
                 <div class="bg-white p-3 shadow-sm rounded-sm">
-                    <div class="flex items-center space-x-2 font-semibold text-gray-900 leading-8">
-                        <span clas="text-green-500">
-                            <svg class="h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                        </span>
-                        <span class="tracking-wide">About</span>
+                    <div class="flex mb-2">
+                        <div class="flex items-center space-x-2 font-semibold text-gray-900 leading-8">
+                            <span clas="text-green-500">
+                                <svg class="h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </span>
+                            <span class="tracking-wide">About</span>
+                        </div>
+                        <button href="#" class="ml-auto my-auto mr-4" onclick="toggleModal('editprofilemodal')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <div class="overflow-x-hidden overflow-y-auto hidden fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center flex" id="editprofilemodal">
+                            <div class="relative w-2/3 my-6 mx-auto max-w-3xl">
+                                <form action="/editprofile" method="POST" enctype='multipart/form-data'>
+                                {% csrf_token %}
+                                <!--content-->
+                                <div class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                                    <!--header-->
+                                    <div class="flex items-start justify-between p-5 border-b border-solid border-gray-200 rounded-t">
+                                        <h3 class="text-3xl font-semibold">Edit Profile</h3>
+                                        <a class="p-1 ml-auto bg-transparent border-0 text-gray-300 float-right text-3xl leading-none font-semibold outline-none focus:outline-none" onclick="toggleModal('editprofilemodal')">
+                                            <span class="bg-transparent h-6 w-6 text-2xl block outline-none focus:outline-none">
+                                            <i class="fas fa-times"></i>
+                                            </span>
+                                        </a>
+                                    </div>
+                                    <!--body-->
+                                    <div class="relative p-6 flex-auto">
+                                        <div class="p-4 rounded-md text-left grid grid-cols-2 gap-4" >
+                                            
+                                            <label class="block mt-2" >
+                                                <span class="font-bold my-1">First Name</span>
+                                                <input type="text" class="form-input mt-1 block w-full p-2" name="fname" value="{{fname}}" required/>
+                                            </label>
+
+                                            <label class="block mt-2" >
+                                                <span class="font-bold my-1">Last Name</span>
+                                                <input type="text" class="form-input mt-1 block w-full p-2" name="lname" value="{{lname}}" required/>
+                                            </label>
+
+                                            <label class="block mt-2" >
+                                                <span class="font-bold my-1">Select a Profile Picture</span>
+                                                <input type="file" class="form-input mt-1 block w-full p-2" name="image" required/>
+                                            </label>
+
+                                            <label class="block mt-2" style="max-width: 400px">
+                                                <span class="font-bold my-1">Address</span>
+                                                <textarea class="form-textarea mt-1 block w-full" rows="3" name="address"
+                                                    placeholder="Enter Address.">{{User.Address}}</textarea>
+                                            </label>
+
+                                            <div class="block mt-2">
+                                                <span class="font-bold my-1">Gender</span>
+                                                    <div class="flex mt-2">
+                                                        <div class="mr-4">
+                                                            <label class="inline-flex items-center">
+                                                                <input type="radio" class="form-radio" name="gender" value="Male" {% if User.Gender == 'Male' %} checked {% endif %}/>
+                                                                <span class="ml-2">Male</span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="mr-4">
+                                                            <label class="inline-flex items-center">
+                                                                <input type="radio" class="form-radio" name="gender" value="Female" {% if User.Gender == 'Female' %} checked {% endif %}/>
+                                                                <span class="ml-2">Female</span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="mr-4">
+                                                            <label class="inline-flex items-center">
+                                                                <input type="radio" class="form-radio" name="gender" value="Other" {% if User.Gender == 'Other' %} checked {% endif %}/>
+                                                                <span class="ml-2">Other</span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                
+                                            </div>
+                                        
+                                            <label class="block mt-2">
+                                                <span class="font-bold my-1">Birthday</span>
+                                                <input class="form-input mt-1 block w-full p-2" name="birthday" type="date" value="{% if User.Birthday != User.Joining_date %} {{User.Birthday}} {% endif %}" required>
+                                            </label>
+
+                                            <label class="block mt-2">
+                                                <span class="font-bold my-1">Mobile No.</span>
+                                                <input class="form-input mt-1 block w-full p-2" name="mobile" placeholder="Mobile number" value="{{User.Mobile}}" required>
+                                            </label>
+                                            
+                                        </div>
+                                    </div>
+                                    <!--footer-->
+                                    <div class="flex items-center justify-end p-6 border-t border-solid border-gray-200 rounded-b">
+                                        <a class="text-indigo-500 background-transparent cursor-pointer font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button" onclick="toggleModal('editprofilemodal')">
+                                            Cancel
+                                        </a>
+                                        <button type="submit" class="bg-indigo-500 text-white active:bg-indigo-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="opacity-25 fixed inset-0 z-40 bg-black hidden" id="editprofilemodal-backdrop"></div>
+                
                     </div>
                     <div class="text-gray-700">
                         <div class="grid md:grid-cols-2 text-sm">
@@ -264,14 +354,13 @@
                                         <label class="block mt-2" >
 
                                              <span class="font-bold my-1">Select a Profile Picture</span>
-                                            <input type="file" class="" name="image"/>
+                                            <input type="file" class="form-input mt-1 block w-full p-2" name="image" required/>
                                         </label>
 
                                         <label class="block mt-2" style="max-width: 400px">
                                             <span class="font-bold my-1">Address</span>
                                             <textarea class="form-textarea mt-1 block w-full" rows="3" name="address"
-                                                placeholder="Enter Address."
-                                            ></textarea>
+                                                placeholder="Enter Address.">{{User.Address}}</textarea>
                                         </label>
 
                                         <div class="block mt-2">
@@ -279,19 +368,19 @@
                                                 <div class="flex mt-2">
                                                     <div class="mr-4">
                                                         <label class="inline-flex items-center">
-                                                            <input type="radio" class="form-radio" name="gender" value="Male" />
+                                                            <input type="radio" class="form-radio" name="gender" value="Male" {% if User.Gender == 'Male' %} checked {% endif %}/>
                                                             <span class="ml-2">Male</span>
                                                         </label>
                                                     </div>
                                                     <div class="mr-4">
                                                         <label class="inline-flex items-center">
-                                                            <input type="radio" class="form-radio" name="gender" value="Female" />
+                                                            <input type="radio" class="form-radio" name="gender" value="Female" {% if User.Gender == 'Female' %} checked {% endif %}/>
                                                             <span class="ml-2">Female</span>
                                                         </label>
                                                     </div>
                                                     <div class="mr-4">
                                                         <label class="inline-flex items-center">
-                                                            <input type="radio" class="form-radio" name="gender" value="Other" />
+                                                            <input type="radio" class="form-radio" name="gender" value="Other" {% if User.Gender == 'Other' %} checked {% endif %}/>
                                                             <span class="ml-2">Other</span>
                                                         </label>
                                                     </div>
@@ -301,15 +390,13 @@
                                     
                                         <label class="block mt-2">
                                             <span class="font-bold my-1">Birthday</span>
-                                            <input class="form-input mt-1 block w-full p-2" name="birthday" type="date">
+                                            <input class="form-input mt-1 block w-full p-2" name="birthday" type="date" value="{% if User.Birthday != User.Joining_date %} {{User.Birthday}} {% endif %}" required>
                                         </label>
 
                                         <label class="block mt-2">
                                             <span class="font-bold my-1">Mobile No.</span>
-                                            <input class="form-input mt-1 block w-full p-2" name="mobile" placeholder="Mobile number">
+                                            <input class="form-input mt-1 block w-full p-2" name="mobile" placeholder="Mobile number" value="{{User.Mobile}}" required>
                                         </label>
-                                    
-                                        
                                         
                                     </div>
                                 </div>

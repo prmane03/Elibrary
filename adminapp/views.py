@@ -186,10 +186,6 @@ def completeprofile(request):
             mobile = request.POST.get('mobile')
             useremail = request.session['username']
             isadmin = request.session['isadmin']
-            if len(request.FILES) != 0:
-                image = request.FILES['image']
-            else:
-                image='-'
             try: 
                 if(isadmin):
                     user = Adminstbl.objects.get(adminEmail=useremail)
@@ -197,6 +193,12 @@ def completeprofile(request):
                     user = Userstbl.objects.get(userEmail=useremail)
             except Exception as e:
                 return HttpResponse(e)
+
+            if len(request.FILES) != 0:
+                image = request.FILES['image']
+            else:
+                image=user.Profile_pic
+
             user.Profile_pic = image
             user.Address = address
             user.Gender = gender
@@ -205,3 +207,43 @@ def completeprofile(request):
             messages.success(request,"Profile Updated")
             user.save()
         return redirect('/account')
+    
+
+def editprofile(request):
+    if(not request.session.has_key("islogged")):
+        return redirect('/logout')
+    else:
+        if request.method == "POST":
+            # image = request.POST.get('image')
+            fname = request.POST.get('fname')
+            lname = request.POST.get('lname')
+            name = fname+" "+lname
+            address = request.POST.get('address')
+            gender = request.POST.get('gender')
+            birthday = request.POST.get('birthday')
+            mobile = request.POST.get('mobile')
+            useremail = request.session['username']
+            isadmin = request.session['isadmin']
+            try: 
+                if(isadmin):
+                    user = Adminstbl.objects.get(adminEmail=useremail)
+                else:
+                    user = Userstbl.objects.get(userEmail=useremail)
+            except Exception as e:
+                return HttpResponse(e)
+
+            if len(request.FILES) != 0:
+                image = request.FILES['image']
+            else:
+                image=user.Profile_pic
+
+            user.Name = name
+            user.Profile_pic = image
+            user.Address = address
+            user.Gender = gender
+            user.Birthday = birthday
+            user.Mobile = mobile
+            messages.success(request,"Profile Updated")
+            user.save()
+        return redirect('/account')
+    

@@ -14,4 +14,5 @@ urlpatterns = [
     path('deletebook', views.deletebook , name='deletebook'),
     path('account', views.account , name='account'),
     path('completeprofile', views.completeprofile , name='completeprofile'),
+    path('editprofile', views.editprofile , name='editprofile'),
 ]
