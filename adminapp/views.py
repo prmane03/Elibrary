@@ -262,3 +262,5 @@ def editprofile(request):
             user.save()
         return redirect('/account')
     
+def showbook(request):
+    return render(request,'book.html')
