@@ -1,843 +1,416 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Dashboard</title>
-    <meta name="description" content="description here" />
-    <meta name="keywords" content="keywords,here" />
+{% extends "base.html" %}
 
-    <link
-      rel="stylesheet"
-      href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
-      integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
-      crossorigin="anonymous"
-    />
-    <!-- <link href="https://unpkg.com/tailwindcss/dist/tailwind.min.css" rel="stylesheet"> -->
-    <!--Replace with your tailwind.css once created-->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js" integrity="sha256-XF29CBwU1MWLaGEnsELogU6Y6rcc5nCkhhx89nFMIDQ=" crossorigin="anonymous"></script> -->
+{% block title %}
+DashBoard
+{% endblock %}
 
-    <style>
-      .gradient {
-        background: linear-gradient(315deg, #9921e8 0%, #5f72be 74%);
-        /* background: linear-gradient(90deg, #d53369 0%, #daae51 100%); */
-      }
-    </style>
-    <style>
-      .modal {
-        transition: opacity 0.25s ease;
-      }
-      body.modal-active {
-        overflow-x: hidden;
-        overflow-y: visible !important;
-      }
-    </style>
+{% block content %}
+<!--Container-->
+<div class="container w-full mx-auto pt-20" id="allbooks">
+  <div class="w-full px-4 md:px-0 md:mt-8 mb-16 text-gray-800 leading-normal">
+    <div class="flex flex-row flex-wrap flex-grow mt-2">
+      <div class="w-full p-3">
+        <!--Table Card-->
+        <div class="bg-white border rounded shadow">
+          {% if request.session.isadmin %}
+          <!-- Button trigger add book modal -->
+          <button class="my-3 ml-3 bg-indigo-500 text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 rounded-full shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 mb-4" type="button" onclick="toggleModal('addbookmodal')">
+            <i class="fas fa-plus"></i> Add Book
+          </button>
+          <!--Add Book Modal -->
+          <div class="overflow-x-hidden overflow-y-auto hidden fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center flex" id="addbookmodal">
+            <div class="relative w-2/3 my-6 mx-auto max-w-3xl">
+              <form action="/addbook" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <!--content-->
+                <div class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                  <!--header-->
+                  <div class="flex items-start justify-between p-5 border-b border-solid border-gray-200 rounded-t">
+                    <h3 class="text-3xl font-semibold">Add Book</h3>
+                    <a class="p-1 ml-auto bg-transparent border-0 text-gray-300 float-right text-3xl leading-none font-semibold outline-none focus:outline-none" onclick="toggleModal('addbookmodal')">
+                      <span class="bg-transparent h-6 w-6 text-2xl block outline-none focus:outline-none">
+                        <i class="fas fa-times"></i>
+                      </span>
+                    </a>
+                  </div>
+                  <!--body-->
+                  <div class="relative p-6 flex-auto">
+                    <div class="p-4 rounded-md text-left grid grid-cols-2 gap-4">
+                      <input type="email" class="hidden" name="useremail" value="{{useremail}}" />
 
-    <!-- tailwind    -->
-    {% comment %}
-    <link href="tailwind.min.css" rel="stylesheet" />
-    {% endcomment %} {% load static %}
-    <link href="{% static 'css/tailwind.min.css' %}" rel="stylesheet" />
+                      <label class="block mt-2">
+                        <span class="font-bold my-1">Book Name</span>
+                        <input class="form-input mt-1 block w-full p-2" name="name" placeholder="Book Name" required />
+                      </label>
 
-    <!-- font-awesome -->
-    <!-- <link href="font-awesome.min.css" rel="stylesheet"> -->
-    <!-- <link href="all.css" rel="stylesheet" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous"> -->
-    <script src="{% static 'js/Chart.js' %}"></script>
-  </head>
+                      <label class="block mt-2">
+                        <span class="font-bold my-1">Publication</span>
+                        <input class="form-input mt-1 block w-full p-2" name="publication" placeholder="Publication" required />
+                      </label>
 
-  <body class="bg-gray-100 font-sans leading-normal tracking-normal">
-    <nav id="header" class="bg-white fixed w-full z-10 top-0 shadow">
-      <div
-        class="w-full container mx-auto flex flex-wrap items-center mt-0 pt-3 pb-3 md:pb-0"
-      >
-        <div class="w-1/2 pl-2 md:pl-0">
-          <a
-            class="text-gray-900 text-base xl:text-xl no-underline hover:no-underline font-bold"
-            href="#"
-          >
-            <i class="fas fa-sun text-pink-600 pr-3"></i> Dashboard
-          </a>
-        </div>
-        <div class="w-1/2 pr-0">
-          <div class="flex relative inline-block float-right">
-            <div class="relative text-sm">
-              <button
-                id="userButton"
-                class="flex items-center focus:outline-none mr-3"
-              >
-                <img
-                  class="w-8 h-8 rounded-full mr-4"
-                  src="http://i.pravatar.cc/300"
-                  alt="Avatar of User"
-                />
-                <span class="hidden md:inline-block">Hi, {{User.Name}} </span>
-                <svg
-                  class="pl-2 h-2"
-                  version="1.1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 129 129"
-                  xmlns:xlink="http://www.w3.org/1999/xlink"
-                  enable-background="new 0 0 129 129"
-                >
-                  <g>
-                    <path
-                      d="m121.3,34.6c-1.6-1.6-4.2-1.6-5.8,0l-51,51.1-51.1-51.1c-1.6-1.6-4.2-1.6-5.8,0-1.6,1.6-1.6,4.2 0,5.8l53.9,53.9c0.8,0.8 1.8,1.2 2.9,1.2 1,0 2.1-0.4 2.9-1.2l53.9-53.9c1.7-1.6 1.7-4.2 0.1-5.8z"
-                    />
-                  </g>
-                </svg>
-              </button>
-              <div
-                id="userMenu"
-                class="bg-white rounded shadow-md mt-2 absolute mt-12 top-0 right-0 min-w-full overflow-auto z-30 invisible"
-              >
-                <ul class="list-reset">
-                  <li>
-                    <a
-                      href="/account"
-                      class="px-4 py-2 block text-gray-900 hover:bg-gray-400 no-underline hover:no-underline"
-                      >My account</a
-                    >
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      class="px-4 py-2 block text-gray-900 hover:bg-gray-400 no-underline hover:no-underline"
-                      >Notifications</a
-                    >
-                  </li>
-                  <li>
-                    <hr class="border-t mx-2 border-gray-400" />
-                  </li>
-                  <li>
-                    <a
-                      href="/logout"
-                      class="px-4 py-2 block text-gray-900 hover:bg-gray-400 no-underline hover:no-underline"
-                      >Logout</a
-                    >
-                  </li>
-                </ul>
-              </div>
+                      <label class="block mt-2">
+                        <span class="font-bold my-1">Author</span>
+                        <input class="form-input mt-1 block w-full p-2" name="author" placeholder="Book Author" required />
+                      </label>
+
+                      <label class="block mt-2 mt-4">
+                        <span class="font-bold my-1">Category</span>
+                        <select class="form-select mt-1 block w-full p-2" name="category">
+                          <option>Arts</option>
+                          <option>Biography</option>
+                          <option>Engineering</option>
+                          <option>History</option>
+                          <option>Law</option>
+                          <option>Mathematics</option>
+                          <option>Novel</option>
+                          <option>Physics</option>
+                          <option>Story Book</option>
+                          <option>Science</option>
+                        </select>
+                      </label>
+
+                      <label class="block mt-2" id="copiesdiv">
+                        <span class="font-bold my-1">Copies</span>
+                        <input class="form-input mt-1 block w-full p-2" placeholder="" type="number" name="tcopies" />
+                      </label>
+
+                      <label class="block mt-2 hidden" id="pdfebookdiv">
+                        <span class="font-bold my-1">Select Pdf Ebook</span>
+                        <input class="form-input mt-1 block w-full p-2" type="file" name="pdfebook" id="pdfbook" />
+                      </label>
+
+                      <label class="flex block mt-2" for="isbook" onclick="toggle_ebook()">
+                        <input class="form-input my-1 p-2" type="checkbox" name="isebook" id="isbook" />
+                        <span class="font-bold ml-4">Is Ebook</span>
+                      </label>
+                      <script>
+                        function toggle_ebook() {
+                          if (
+                            document.getElementById("isbook").checked ==
+                            true
+                          ) {
+                            document
+                              .getElementById("pdfebookdiv")
+                              .classList.remove("hidden");
+                            document
+                              .getElementById("copiesdiv")
+                              .classList.add("hidden");
+                            document.getElementById(
+                              "pdfbook"
+                            ).required = true;
+                          } else {
+                            document
+                              .getElementById("pdfebookdiv")
+                              .classList.add("hidden");
+                            document
+                              .getElementById("copiesdiv")
+                              .classList.remove("hidden");
+                            document.getElementById(
+                              "pdfbook"
+                            ).required = false;
+                          }
+                        }
+                      </script>
+                    </div>
+                  </div>
+                  <!--footer-->
+                  <div class="flex items-center justify-end p-6 border-t border-solid border-gray-200 rounded-b">
+                    <a class="text-indigo-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button" onclick="toggleModal('addbookmodal')">
+                      Cancel
+                    </a>
+                    <button type="submit" class="bg-indigo-500 text-white active:bg-indigo-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">
+                      Add
+                    </button>
+                  </div>
+                </div>
+              </form>
             </div>
+          </div>
+          <div class="opacity-25 fixed inset-0 z-40 bg-black hidden" id="addbookmodal-backdrop"></div>
+          {% endif %}
 
-            <div class="block lg:hidden pr-4">
-              <button
-                id="nav-toggle"
-                class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none"
-              >
-                <svg
-                  class="fill-current h-3 w-3"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <title>Menu</title>
-                  <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
-                </svg>
+          <div class="border-b p-3 gradient text-white">
+            <h5 class="font-bold uppercase">Books</h5>
+          </div>
+          <div class="p-5">
+            <table class="w-full p-5 text-gray-700">
+              <thead>
+                <tr class="border-b py-2">
+                  <th class="text-left text-blue-900">ID</th>
+                  <th class="text-left text-blue-900">Name</th>
+                  <th class="text-left text-blue-900">Publication</th>
+                  <th class="text-left text-blue-900">Author</th>
+                  <th class="text-left text-blue-900">Category</th>
+                  <th class="text-center text-blue-900">
+                    Available Copies
+                  </th>
+                  <th class="text-center text-blue-900">Issued Copies</th>
+                  <th class="text-center text-blue-900">Total Copies</th>
+                  {% if request.session.isadmin %}
+                  <th></th>
+                  {% endif %}
+                </tr>
+              </thead>
+
+              <tbody>
+                {% if Books %} {% for book in Books %}
+                <tr class="border-b py-2 hover:bg-gray-200">
+                  <td># {{book.id}}</td>
+                  <td>{{book.Name}}</td>
+                  <td>{{book.Publication}}</td>
+                  <td>{{book.Author}}</td>
+                  <td>{{book.Category}}</td>
+                  <td class="text-center">{{book.AvailableCopies}}</td>
+                  <td class="text-center">{{book.IssuedCopies}}</td>
+                  <td class="text-center">{{book.TotalCopies}}</td>
+                  {% if request.session.isadmin %}
+                  <td>
+                    <div class="flex items-center justify-center my-2">
+                      <button class="text-purple-500 bg-transparent border border-solid border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 outline-none focus:outline-none mb-1 ease-linear transition-all duration-150" type="button" onclick="toggleUpdateBookModal('updatebookmodal',this.parentNode.parentNode.parentNode,'book')">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="text-purple-500 bg-transparent border-t border-b border-r border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 rounded-r outline-none focus:outline-none mb-1 ease-linear transition-all duration-150" type="button" onclick="toggleDeleteBookModal('deletebookmodal',this.parentNode.parentNode.parentNode)">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                  {% endif %}
+                </tr>
+                {% endfor %} {% else %}
+                <tr class="border-b py-2">
+                  <td class="text-center p-4" colspan="8">No Data Found</td>
+                </tr>
+                {% endif %}
+              </tbody>
+            </table>
+            <!-- pagination -->
+
+            <div class="flex items-center justify-center mt-4">
+              <button class="text-purple-500 bg-transparent border-l border-t border-b border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 rounded-l outline-none focus:outline-none mb-1 ease-linear transition-all duration-150" type="button">
+                &lt;
+              </button>
+              <button class="text-purple-500 bg-transparent border border-solid border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 outline-none focus:outline-none mb-1 ease-linear transition-all duration-150" type="button">
+                1
+              </button>
+              <button class="text-purple-500 bg-transparent border-t border-b border-r border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 rounded-r outline-none focus:outline-none mb-1 ease-linear transition-all duration-150" type="button">
+                2
+              </button>
+              <button class="text-purple-500 bg-transparent border-t border-b border-r border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 rounded-r outline-none focus:outline-none mb-1 ease-linear transition-all duration-150" type="button">
+                &gt;
               </button>
             </div>
           </div>
-        </div>
 
-        <div
-          class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden lg:block mt-2 lg:mt-0 bg-white z-20"
-          id="nav-content"
-        >
-          <ul class="list-reset lg:flex flex-1 items-center px-4 md:px-0">
-            <li class="mr-6 my-2 md:my-0">
-              <a
-                href="#"
-                class="block py-1 md:py-3 pl-1 align-middle text-pink-600 no-underline hover:text-gray-900 border-b-2 border-orange-600 hover:border-orange-600"
-              >
-                <i class="fas fa-home fa-fw mr-3 text-pink-600"></i
-                ><span class="pb-1 md:pb-0 text-sm">Home</span>
-              </a>
-            </li>
-            <li class="mr-6 my-2 md:my-0">
-              <a
-                href="#allbooks"
-                class="block py-1 md:py-3 pl-1 align-middle text-gray-500 no-underline hover:text-gray-900 border-b-2 border-white hover:border-pink-500"
-              >
-                <i class="fas fa-tasks fa-fw mr-3"></i
-                ><span class="pb-1 md:pb-0 text-sm">All Books</span>
-              </a>
-            </li>
-            <li class="mr-6 my-2 md:my-0">
-              <a
-                href="#"
-                class="block py-1 md:py-3 pl-1 align-middle text-gray-500 no-underline hover:text-gray-900 border-b-2 border-white hover:border-purple-500"
-              >
-                <i class="fa fa-envelope fa-fw mr-3"></i
-                ><span class="pb-1 md:pb-0 text-sm">Messages</span>
-              </a>
-            </li>
-            <li class="mr-6 my-2 md:my-0">
-              <a
-                href="#"
-                class="block py-1 md:py-3 pl-1 align-middle text-gray-500 no-underline hover:text-gray-900 border-b-2 border-white hover:border-green-500"
-              >
-                <i class="fas fa-chart-area fa-fw mr-3"></i
-                ><span class="pb-1 md:pb-0 text-sm">Analytics</span>
-              </a>
-            </li>
-            <li class="mr-6 my-2 md:my-0">
-              <a
-                href="/account"
-                class="block py-1 md:py-3 pl-1 align-middle text-gray-500 no-underline hover:text-gray-900 border-b-2 border-white hover:border-red-500"
-              >
-                <i class="fa fa-wallet fa-fw mr-3"></i
-                ><span class="pb-1 md:pb-0 text-sm">Profile</span>
-              </a>
-            </li>
-          </ul>
-
-          <div class="relative pull-right pl-4 pr-4 md:pr-0">
-            <input
-              type="search"
-              placeholder="Search"
-              class="w-full bg-gray-100 text-sm text-gray-800 transition border focus:outline-none focus:border-gray-700 rounded py-1 px-2 pl-10 appearance-none leading-normal"
-            />
-            <div
-              class="absolute search-icon"
-              style="top: 0.375rem; left: 1.75rem"
-            >
-              <svg
-                class="fill-current pointer-events-none text-gray-800 w-4 h-4"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"
-                ></path>
-              </svg>
-            </div>
+          <div class="border-b p-3 gradient text-white">
+            <h5 class="font-bold uppercase">EBooks</h5>
           </div>
-        </div>
-      </div>
-    </nav>
+          <div class="p-5">
+            {% comment %} table ebooks {% endcomment %}
 
-    <!--Container-->
-    <div class="container w-full mx-auto pt-20" id="allbooks">
-      <div
-        class="w-full px-4 md:px-0 md:mt-8 mb-16 text-gray-800 leading-normal"
-      >
-        <div class="flex flex-row flex-wrap flex-grow mt-2">
-          <div class="w-full p-3">
-            <!--Table Card-->
-            <div class="bg-white border rounded shadow">
-              {% if request.session.isadmin %}
-              <!-- Button trigger add book modal -->
-              <button
-                class="my-3 ml-3 bg-indigo-500 text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 rounded-full shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 mb-4"
-                type="button"
-                onclick="toggleModal('addbookmodal')"
-              >
-                <i class="fas fa-plus"></i> Add Book
+            <table class="w-full p-5 text-gray-700">
+              <thead>
+                <tr class="border-b py-2">
+                  <th class="text-left text-blue-900">ID</th>
+                  <th class="text-left text-blue-900">Name</th>
+                  <th class="text-left text-blue-900">Publication</th>
+                  <th class="text-left text-blue-900">Author</th>
+                  <th class="text-left text-blue-900">Category</th>
+                  <th class="text-center text-blue-900">Download</th>
+                  {% if request.session.isadmin %}
+                  <th></th>
+                  {% endif %}
+                </tr>
+              </thead>
+
+              <tbody>
+                {% if Ebooks %} {% for book in Ebooks %}
+                <tr class="border-b py-2 hover:bg-gray-200">
+                  <td># {{book.id}}</td>
+                  <td>{{book.Name}}</td>
+                  <td>{{book.Publication}}</td>
+                  <td>{{book.Author}}</td>
+                  <td>{{book.Category}}</td>
+                  <td class="text-center text-blue-500">
+                    <a href="{{book.Pdf_file.url}}" download>Download</a>
+                  </td>
+                  {% if request.session.isadmin %}
+                  <td>
+                    <div class="flex items-center justify-center my-2">
+                      <button class="text-purple-500 bg-transparent border border-solid border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 outline-none focus:outline-none mb-1 ease-linear transition-all duration-150" type="button" onclick="toggleUpdateBookModal('updatebookmodal',this.parentNode.parentNode.parentNode,'ebook')">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="text-purple-500 bg-transparent border-t border-b border-r border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 rounded-r outline-none focus:outline-none mb-1 ease-linear transition-all duration-150" type="button" onclick="toggleDeleteBookModal('deletebookmodal',this.parentNode.parentNode.parentNode)">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                  {% endif %}
+                </tr>
+                {% endfor %} {% else %}
+                <tr class="border-b py-2">
+                  <td class="text-center p-4" colspan="8">No Data Found</td>
+                </tr>
+                {% endif %}
+              </tbody>
+            </table>
+
+            <!-- pagination ebook-->
+
+            <div class="flex items-center justify-center mt-4">
+              <button class="text-purple-500 bg-transparent border-l border-t border-b border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 rounded-l outline-none focus:outline-none mb-1 ease-linear transition-all duration-150" type="button">
+                &lt;
               </button>
-              <!--Add Book Modal -->
-              <div
-                class="overflow-x-hidden overflow-y-auto hidden fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center flex"
-                id="addbookmodal"
-              >
-                <div class="relative w-2/3 my-6 mx-auto max-w-3xl">
-                  <form
-                    action="/addbook"
-                    method="POST"
-                    enctype="multipart/form-data"
-                  >
-                    {% csrf_token %}
-                    <!--content-->
-                    <div
-                      class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none"
-                    >
-                      <!--header-->
-                      <div
-                        class="flex items-start justify-between p-5 border-b border-solid border-gray-200 rounded-t"
-                      >
-                        <h3 class="text-3xl font-semibold">Add Book</h3>
-                        <a
-                          class="p-1 ml-auto bg-transparent border-0 text-gray-300 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                          onclick="toggleModal('addbookmodal')"
-                        >
-                          <span
-                            class="bg-transparent h-6 w-6 text-2xl block outline-none focus:outline-none"
-                          >
-                            <i class="fas fa-times"></i>
-                          </span>
-                        </a>
-                      </div>
-                      <!--body-->
-                      <div class="relative p-6 flex-auto">
-                        <div
-                          class="p-4 rounded-md text-left grid grid-cols-2 gap-4"
-                        >
-                          <input
-                            type="email"
-                            class="hidden"
-                            name="useremail"
-                            value="{{useremail}}"
-                          />
-
-                          <label class="block mt-2">
-                            <span class="font-bold my-1">Book Name</span>
-                            <input
-                              class="form-input mt-1 block w-full p-2"
-                              name="name"
-                              placeholder="Book Name"
-                              required
-                            />
-                          </label>
-
-                          <label class="block mt-2">
-                            <span class="font-bold my-1">Publication</span>
-                            <input
-                              class="form-input mt-1 block w-full p-2"
-                              name="publication"
-                              placeholder="Publication"
-                              required
-                            />
-                          </label>
-
-                          <label class="block mt-2">
-                            <span class="font-bold my-1">Author</span>
-                            <input
-                              class="form-input mt-1 block w-full p-2"
-                              name="author"
-                              placeholder="Book Author"
-                              required
-                            />
-                          </label>
-
-                          <label class="block mt-2 mt-4">
-                            <span class="font-bold my-1">Category</span>
-                            <select
-                              class="form-select mt-1 block w-full p-2"
-                              name="category"
-                            >
-                              <option>Arts</option>
-                              <option>Biography</option>
-                              <option>Engineering</option>
-                              <option>History</option>
-                              <option>Law</option>
-                              <option>Mathematics</option>
-                              <option>Novel</option>
-                              <option>Physics</option>
-                              <option>Story Book</option>
-                              <option>Science</option>
-                            </select>
-                          </label>
-
-                          <label class="block mt-2" id="copiesdiv">
-                            <span class="font-bold my-1">Copies</span>
-                            <input
-                              class="form-input mt-1 block w-full p-2"
-                              placeholder=""
-                              type="number"
-                              name="tcopies"
-                            />
-                          </label>
-
-                          <label class="block mt-2 hidden" id="pdfebookdiv">
-                            <span class="font-bold my-1">Select Pdf Ebook</span>
-                            <input
-                              class="form-input mt-1 block w-full p-2"
-                              type="file"
-                              name="pdfebook"
-                              id="pdfbook"
-                            />
-                          </label>
-
-                          <label
-                            class="flex block mt-2"
-                            for="isbook"
-                            onclick="toggle_ebook()"
-                          >
-                            <input
-                              class="form-input my-1 p-2"
-                              type="checkbox"
-                              name="isebook"
-                              id="isbook"
-                            />
-                            <span class="font-bold ml-4">Is Ebook</span>
-                          </label>
-                          <script>
-                            function toggle_ebook() {
-                              if (
-                                document.getElementById("isbook").checked ==
-                                true
-                              ) {
-                                document
-                                  .getElementById("pdfebookdiv")
-                                  .classList.remove("hidden");
-                                document
-                                  .getElementById("copiesdiv")
-                                  .classList.add("hidden");
-                                document.getElementById(
-                                  "pdfbook"
-                                ).required = true;
-                              } else {
-                                document
-                                  .getElementById("pdfebookdiv")
-                                  .classList.add("hidden");
-                                document
-                                  .getElementById("copiesdiv")
-                                  .classList.remove("hidden");
-                                document.getElementById(
-                                  "pdfbook"
-                                ).required = false;
-                              }
-                            }
-                          </script>
-                        </div>
-                      </div>
-                      <!--footer-->
-                      <div
-                        class="flex items-center justify-end p-6 border-t border-solid border-gray-200 rounded-b"
-                      >
-                        <a
-                          class="text-indigo-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                          type="button"
-                          onclick="toggleModal('addbookmodal')"
-                        >
-                          Cancel
-                        </a>
-                        <button
-                          type="submit"
-                          class="bg-indigo-500 text-white active:bg-indigo-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                        >
-                          Add
-                        </button>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
-              <div
-                class="opacity-25 fixed inset-0 z-40 bg-black hidden"
-                id="addbookmodal-backdrop"
-              ></div>
-              {% endif %}
-
-              <div class="border-b p-3 gradient text-white">
-                <h5 class="font-bold uppercase">Books</h5>
-              </div>
-              <div class="p-5">
-                <table class="w-full p-5 text-gray-700">
-                  <thead>
-                    <tr class="border-b py-2">
-                      <th class="text-left text-blue-900">ID</th>
-                      <th class="text-left text-blue-900">Name</th>
-                      <th class="text-left text-blue-900">Publication</th>
-                      <th class="text-left text-blue-900">Author</th>
-                      <th class="text-left text-blue-900">Category</th>
-                      <th class="text-center text-blue-900">
-                        Available Copies
-                      </th>
-                      <th class="text-center text-blue-900">Issued Copies</th>
-                      <th class="text-center text-blue-900">Total Copies</th>
-                      {% if request.session.isadmin %}
-                      <th></th>
-                      {% endif %}
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {% if Books %} {% for book in Books %}
-                    <tr class="border-b py-2 hover:bg-gray-200">
-                      <td># {{book.id}}</td>
-                      <td>{{book.Name}}</td>
-                      <td>{{book.Publication}}</td>
-                      <td>{{book.Author}}</td>
-                      <td>{{book.Category}}</td>
-                      <td class="text-center">{{book.AvailableCopies}}</td>
-                      <td class="text-center">{{book.IssuedCopies}}</td>
-                      <td class="text-center">{{book.TotalCopies}}</td>
-                      {% if request.session.isadmin %}
-                      <td>
-                        <div class="flex items-center justify-center my-2">
-                          <button
-                            class="text-purple-500 bg-transparent border border-solid border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
-                            type="button"
-                            onclick="toggleUpdateBookModal('updatebookmodal',this.parentNode.parentNode.parentNode,'book')"
-                          >
-                            <i class="fas fa-edit"></i>
-                          </button>
-                          <button
-                            class="text-purple-500 bg-transparent border-t border-b border-r border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 rounded-r outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
-                            type="button"
-                            onclick="toggleDeleteBookModal('deletebookmodal',this.parentNode.parentNode.parentNode)"
-                          >
-                            <i class="fas fa-trash"></i>
-                          </button>
-                        </div>
-                      </td>
-                      {% endif %}
-                    </tr>
-                    {% endfor %} {% else %}
-                    <tr class="border-b py-2">
-                      <td class="text-center p-4" colspan="8">No Data Found</td>
-                    </tr>
-                    {% endif %}
-                  </tbody>
-                </table>
-                <!-- pagination -->
-
-                <div class="flex items-center justify-center mt-4">
-                  <button
-                    class="text-purple-500 bg-transparent border-l border-t border-b border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 rounded-l outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
-                    type="button"
-                  >
-                    &lt;
-                  </button>
-                  <button
-                    class="text-purple-500 bg-transparent border border-solid border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
-                    type="button"
-                  >
-                    1
-                  </button>
-                  <button
-                    class="text-purple-500 bg-transparent border-t border-b border-r border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 rounded-r outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
-                    type="button"
-                  >
-                    2
-                  </button>
-                  <button
-                    class="text-purple-500 bg-transparent border-t border-b border-r border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 rounded-r outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
-                    type="button"
-                  >
-                    &gt;
-                  </button>
-                </div>
-              </div>
-
-              <div class="border-b p-3 gradient text-white">
-                <h5 class="font-bold uppercase">EBooks</h5>
-              </div>
-              <div class="p-5">
-                {% comment %} table ebooks {% endcomment %}
-
-                <table class="w-full p-5 text-gray-700">
-                  <thead>
-                    <tr class="border-b py-2">
-                      <th class="text-left text-blue-900">ID</th>
-                      <th class="text-left text-blue-900">Name</th>
-                      <th class="text-left text-blue-900">Publication</th>
-                      <th class="text-left text-blue-900">Author</th>
-                      <th class="text-left text-blue-900">Category</th>
-                      <th class="text-center text-blue-900">Download</th>
-                      {% if request.session.isadmin %}
-                      <th></th>
-                      {% endif %}
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {% if Ebooks %} {% for book in Ebooks %}
-                    <tr class="border-b py-2 hover:bg-gray-200">
-                      <td># {{book.id}}</td>
-                      <td>{{book.Name}}</td>
-                      <td>{{book.Publication}}</td>
-                      <td>{{book.Author}}</td>
-                      <td>{{book.Category}}</td>
-                      <td class="text-center text-blue-500">
-                        <a href="{{book.Pdf_file.url}}" download>Download</a>
-                      </td>
-                      {% if request.session.isadmin %}
-                      <td>
-                        <div class="flex items-center justify-center my-2">
-                          <button
-                            class="text-purple-500 bg-transparent border border-solid border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
-                            type="button"
-                            onclick="toggleUpdateBookModal('updatebookmodal',this.parentNode.parentNode.parentNode,'ebook')"
-                          >
-                            <i class="fas fa-edit"></i>
-                          </button>
-                          <button
-                            class="text-purple-500 bg-transparent border-t border-b border-r border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 rounded-r outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
-                            type="button"
-                            onclick="toggleDeleteBookModal('deletebookmodal',this.parentNode.parentNode.parentNode)"
-                          >
-                            <i class="fas fa-trash"></i>
-                          </button>
-                        </div>
-                      </td>
-                      {% endif %}
-                    </tr>
-                    {% endfor %} {% else %}
-                    <tr class="border-b py-2">
-                      <td class="text-center p-4" colspan="8">No Data Found</td>
-                    </tr>
-                    {% endif %}
-                  </tbody>
-                </table>
-
-                <!-- pagination ebook-->
-
-                <div class="flex items-center justify-center mt-4">
-                  <button
-                    class="text-purple-500 bg-transparent border-l border-t border-b border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 rounded-l outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
-                    type="button"
-                  >
-                    &lt;
-                  </button>
-                  <button
-                    class="text-purple-500 bg-transparent border border-solid border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
-                    type="button"
-                  >
-                    1
-                  </button>
-                  <button
-                    class="text-purple-500 bg-transparent border-t border-b border-r border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 rounded-r outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
-                    type="button"
-                  >
-                    2
-                  </button>
-                  <button
-                    class="text-purple-500 bg-transparent border-t border-b border-r border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 rounded-r outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
-                    type="button"
-                  >
-                    &gt;
-                  </button>
-                </div>
-              </div>
-
-              {% if request.session.isadmin %}
-              <!-- Modal Delete Book -->
-              <div
-                class="overflow-x-hidden overflow-y-auto hidden fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center flex"
-                id="deletebookmodal"
-              >
-                <div class="relative w-2/3 my-6 mx-auto max-w-3xl">
-                  <form action="/deletebook" method="POST">
-                    {% csrf_token %}
-                    <!--content-->
-                    <div
-                      class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none"
-                    >
-                      <!--header-->
-                      <div
-                        class="flex items-start justify-between p-5 border-b border-solid border-gray-200 rounded-t"
-                      >
-                        <h3 class="text-3xl font-semibold">Warning</h3>
-                        <button
-                          class="p-1 ml-auto bg-transparent border-0 text-gray-300 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                          type="button"
-                          onclick="toggleModal('deletebookmodal')"
-                        >
-                          <span
-                            class="bg-transparent h-6 w-6 text-2xl block outline-none focus:outline-none"
-                          >
-                            <i class="fas fa-times"></i>
-                          </span>
-                        </button>
-                      </div>
-                      <!--body-->
-                      <div class="relative p-6 flex-auto">
-                        <div class="px-4 rounded-md text-left">
-                          <input
-                            type="text"
-                            class="hidden"
-                            name="book_id"
-                            id="book_id1"
-                          />
-                          <p class="text-lg font-semibold">
-                            Are you sure want to delete this record ? You can`t
-                            undo this action once done.
-                          </p>
-                        </div>
-                      </div>
-                      <!--footer-->
-                      <div
-                        class="flex items-center justify-end p-6 border-t border-solid border-gray-200 rounded-b"
-                      >
-                        <button
-                          class="text-indigo-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                          type="button"
-                          onclick="toggleModal('deletebookmodal')"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          class="bg-indigo-500 text-white active:bg-indigo-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
-              <div
-                class="opacity-25 fixed inset-0 z-40 bg-black hidden"
-                id="deletebookmodal-backdrop"
-              ></div>
-
-              <!-- Modal Update Book -->
-              <div
-                class="overflow-x-hidden overflow-y-auto hidden fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center flex"
-                id="updatebookmodal"
-              >
-                <div class="relative w-2/3 my-6 mx-auto max-w-3xl">
-                  <form
-                    action="/updatebook"
-                    method="POST"
-                    enctype="multipart/form-data"
-                  >
-                    {% csrf_token %}
-                    <!--content-->
-                    <div
-                      class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none"
-                    >
-                      <!--header-->
-                      <div
-                        class="flex items-start justify-between p-5 border-b border-solid border-gray-200 rounded-t"
-                      >
-                        <h3 class="text-3xl font-semibold">
-                          Change Book Entries
-                        </h3>
-                        <button
-                          class="p-1 ml-auto bg-transparent border-0 text-gray-300 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                          type="button"
-                          onclick="toggleModal('updatebookmodal')"
-                        >
-                          <span
-                            class="bg-transparent h-6 w-6 text-2xl block outline-none focus:outline-none"
-                          >
-                            <i class="fas fa-times"></i>
-                          </span>
-                        </button>
-                      </div>
-                      <!--body-->
-                      <div class="relative p-6 flex-auto">
-                        <div
-                          class="p-4 rounded-md text-left grid grid-cols-2 gap-4"
-                        >
-                          <input
-                            type="text"
-                            class="hidden"
-                            name="book_id"
-                            id="updatemodalbookid"
-                          />
-
-                          <input
-                            name="isebook"
-                            id="updatemodalisebook"
-                            class="hidden"
-                          />
-
-                          <label class="block mt-2">
-                            <span class="font-bold my-1">Book Name</span>
-                            <input
-                              class="form-input mt-1 block w-full p-2"
-                              name="name"
-                              id="updatemodalbookname"
-                              placeholder="HTML"
-                            />
-                          </label>
-
-                          <label class="block mt-2">
-                            <span class="font-bold my-1">Publication</span>
-                            <input
-                              class="form-input mt-1 block w-full p-2"
-                              name="publication"
-                              id="updatemodalpublication"
-                              placeholder="Techmax"
-                            />
-                          </label>
-
-                          <label class="block mt-2">
-                            <span class="font-bold my-1">Author</span>
-                            <input
-                              class="form-input mt-1 block w-full p-2"
-                              name="author"
-                              id="updatemodalauthor"
-                              placeholder="Jane Doe"
-                            />
-                          </label>
-
-                          <label class="block mt-2 mt-4">
-                            <span class="font-bold my-1">Category</span>
-                            <select
-                              class="form-select mt-1 block w-full p-2"
-                              name="category"
-                              id="updatemodalcategory"
-                            >
-                              <option>Arts</option>
-                              <option>Biography</option>
-                              <option>Engineering</option>
-                              <option>History</option>
-                              <option>Law</option>
-                              <option>Mathematics</option>
-                              <option>Novel</option>
-                              <option>Physics</option>
-                              <option>Story Book</option>
-                              <option>Science</option>
-                            </select>
-                          </label>
-
-                          <label class="block mt-2" id="updatemodalcopiesdiv">
-                            <span class="font-bold my-1">Copies</span>
-                            <input
-                              class="form-input mt-1 block w-full p-2"
-                              name="tcopies"
-                              placeholder=""
-                              id="updatemodalcopies"
-                              type="number"
-                            />
-                          </label>
-
-                          <label class="block mt-2" id="updatemodalebookdiv">
-                            <span class="font-bold my-1">Select Pdf File</span>
-                            <input
-                              class="form-input mt-1 block w-full p-2"
-                              type="file"
-                              name="update_ebook"
-                              id="updatemodalebook"
-                            />
-                          </label>
-                        </div>
-                      </div>
-                      <!--footer-->
-                      <div
-                        class="flex items-center justify-end p-6 border-t border-solid border-gray-200 rounded-b"
-                      >
-                        <button
-                          class="text-indigo-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                          type="button"
-                          onclick="toggleModal('updatebookmodal')"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          class="bg-indigo-500 text-white active:bg-indigo-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                        >
-                          Update
-                        </button>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
-              <div
-                class="opacity-25 fixed inset-0 z-40 bg-black hidden"
-                id="updatebookmodal-backdrop"
-              ></div>
-              {% endif %}
+              <button class="text-purple-500 bg-transparent border border-solid border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 outline-none focus:outline-none mb-1 ease-linear transition-all duration-150" type="button">
+                1
+              </button>
+              <button class="text-purple-500 bg-transparent border-t border-b border-r border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 rounded-r outline-none focus:outline-none mb-1 ease-linear transition-all duration-150" type="button">
+                2
+              </button>
+              <button class="text-purple-500 bg-transparent border-t border-b border-r border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 rounded-r outline-none focus:outline-none mb-1 ease-linear transition-all duration-150" type="button">
+                &gt;
+              </button>
             </div>
-            <!--/table Card-->
           </div>
-        </div>
 
-        <!--/ Console Content-->
+          {% if request.session.isadmin %}
+          <!-- Modal Delete Book -->
+          <div class="overflow-x-hidden overflow-y-auto hidden fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center flex" id="deletebookmodal">
+            <div class="relative w-2/3 my-6 mx-auto max-w-3xl">
+              <form action="/deletebook" method="POST">
+                {% csrf_token %}
+                <!--content-->
+                <div class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                  <!--header-->
+                  <div class="flex items-start justify-between p-5 border-b border-solid border-gray-200 rounded-t">
+                    <h3 class="text-3xl font-semibold">Warning</h3>
+                    <button class="p-1 ml-auto bg-transparent border-0 text-gray-300 float-right text-3xl leading-none font-semibold outline-none focus:outline-none" type="button" onclick="toggleModal('deletebookmodal')">
+                      <span class="bg-transparent h-6 w-6 text-2xl block outline-none focus:outline-none">
+                        <i class="fas fa-times"></i>
+                      </span>
+                    </button>
+                  </div>
+                  <!--body-->
+                  <div class="relative p-6 flex-auto">
+                    <div class="px-4 rounded-md text-left">
+                      <input type="text" class="hidden" name="book_id" id="book_id1" />
+                      <p class="text-lg font-semibold">
+                        Are you sure want to delete this record ? You can`t
+                        undo this action once done.
+                      </p>
+                    </div>
+                  </div>
+                  <!--footer-->
+                  <div class="flex items-center justify-end p-6 border-t border-solid border-gray-200 rounded-b">
+                    <button class="text-indigo-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button" onclick="toggleModal('deletebookmodal')">
+                      Cancel
+                    </button>
+                    <button type="submit" class="bg-indigo-500 text-white active:bg-indigo-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="opacity-25 fixed inset-0 z-40 bg-black hidden" id="deletebookmodal-backdrop"></div>
+
+          <!-- Modal Update Book -->
+          <div class="overflow-x-hidden overflow-y-auto hidden fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center flex" id="updatebookmodal">
+            <div class="relative w-2/3 my-6 mx-auto max-w-3xl">
+              <form action="/updatebook" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <!--content-->
+                <div class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                  <!--header-->
+                  <div class="flex items-start justify-between p-5 border-b border-solid border-gray-200 rounded-t">
+                    <h3 class="text-3xl font-semibold">
+                      Change Book Entries
+                    </h3>
+                    <button class="p-1 ml-auto bg-transparent border-0 text-gray-300 float-right text-3xl leading-none font-semibold outline-none focus:outline-none" type="button" onclick="toggleModal('updatebookmodal')">
+                      <span class="bg-transparent h-6 w-6 text-2xl block outline-none focus:outline-none">
+                        <i class="fas fa-times"></i>
+                      </span>
+                    </button>
+                  </div>
+                  <!--body-->
+                  <div class="relative p-6 flex-auto">
+                    <div class="p-4 rounded-md text-left grid grid-cols-2 gap-4">
+                      <input type="text" class="hidden" name="book_id" id="updatemodalbookid" />
+
+                      <input name="isebook" id="updatemodalisebook" class="hidden" />
+
+                      <label class="block mt-2">
+                        <span class="font-bold my-1">Book Name</span>
+                        <input class="form-input mt-1 block w-full p-2" name="name" id="updatemodalbookname" placeholder="HTML" />
+                      </label>
+
+                      <label class="block mt-2">
+                        <span class="font-bold my-1">Publication</span>
+                        <input class="form-input mt-1 block w-full p-2" name="publication" id="updatemodalpublication" placeholder="Techmax" />
+                      </label>
+
+                      <label class="block mt-2">
+                        <span class="font-bold my-1">Author</span>
+                        <input class="form-input mt-1 block w-full p-2" name="author" id="updatemodalauthor" placeholder="Jane Doe" />
+                      </label>
+
+                      <label class="block mt-2 mt-4">
+                        <span class="font-bold my-1">Category</span>
+                        <select class="form-select mt-1 block w-full p-2" name="category" id="updatemodalcategory">
+                          <option>Arts</option>
+                          <option>Biography</option>
+                          <option>Engineering</option>
+                          <option>History</option>
+                          <option>Law</option>
+                          <option>Mathematics</option>
+                          <option>Novel</option>
+                          <option>Physics</option>
+                          <option>Story Book</option>
+                          <option>Science</option>
+                        </select>
+                      </label>
+
+                      <label class="block mt-2" id="updatemodalcopiesdiv">
+                        <span class="font-bold my-1">Copies</span>
+                        <input class="form-input mt-1 block w-full p-2" name="tcopies" placeholder="" id="updatemodalcopies" type="number" />
+                      </label>
+
+                      <label class="block mt-2" id="updatemodalebookdiv">
+                        <span class="font-bold my-1">Select Pdf File</span>
+                        <input class="form-input mt-1 block w-full p-2" type="file" name="update_ebook" id="updatemodalebook" />
+                      </label>
+                    </div>
+                  </div>
+                  <!--footer-->
+                  <div class="flex items-center justify-end p-6 border-t border-solid border-gray-200 rounded-b">
+                    <button class="text-indigo-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button" onclick="toggleModal('updatebookmodal')">
+                      Cancel
+                    </button>
+                    <button type="submit" class="bg-indigo-500 text-white active:bg-indigo-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">
+                      Update
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="opacity-25 fixed inset-0 z-40 bg-black hidden" id="updatebookmodal-backdrop"></div>
+          {% endif %}
+        </div>
+        <!--/table Card-->
       </div>
     </div>
-    <!--/container-->
 
-    <footer class="bg-white border-t border-gray-400 shadow">
-      <div class="container max-w-md mx-auto flex py-8">
-        <div class="w-full mx-auto flex flex-wrap">
-          <!-- <div class="flex w-full md:w-1/2 ">
+    <!--/ Console Content-->
+  </div>
+</div>
+<!--/container-->
+{% endblock %}
+
+<footer class="bg-white border-t border-gray-400 shadow">
+  <div class="container max-w-md mx-auto flex py-8">
+    <div class="w-full mx-auto flex flex-wrap">
+      <!-- <div class="flex w-full md:w-1/2 ">
                     <div class="px-8">
                         <h3 class="font-bold font-bold text-gray-900">About</h3>
                         <p class="py-4 text-gray-600 text-sm">
@@ -846,152 +419,85 @@
                     </div>
                 </div> -->
 
-          <div class="flex w-full md:w-1/2 text">
-            <div class="px-8">
-              <h3 class="font-bold font-bold text-gray-900">Social</h3>
-              <ul class="list-reset items-center text-sm pt-3">
-                <li>
-                  <a
-                    class="inline-block text-gray-600 no-underline hover:text-gray-900 py-1"
-                    href="mailto:prmane03@gmail.com"
-                    ><i class="fas fa-at mr-1"></i>prmane03@gmail.com</a
-                  >
-                </li>
-                <li>
-                  <a
-                    class="inline-block text-gray-600 no-underline hover:text-gray-900 py-1"
-                    href="https://www.linkedin.com/in/prmane03/"
-                    ><i class="fab fa-linkedin-in mr-1"></i> linkedin</a
-                  >
-                </li>
-                <li>
-                  <a
-                    class="inline-block text-gray-600 no-underline hover:text-gray-900 py-1"
-                    href="https://www.instagram.com/prmane03/"
-                  >
-                    <i class="fab fa-instagram mr-1"></i> Instagram</a
-                  >
-                </li>
-              </ul>
-            </div>
-          </div>
+      <div class="flex w-full md:w-1/2 text">
+        <div class="px-8">
+          <h3 class="font-bold font-bold text-gray-900">Social</h3>
+          <ul class="list-reset items-center text-sm pt-3">
+            <li>
+              <a class="inline-block text-gray-600 no-underline hover:text-gray-900 py-1" href="mailto:prmane03@gmail.com"><i class="fas fa-at mr-1"></i>prmane03@gmail.com</a>
+            </li>
+            <li>
+              <a class="inline-block text-gray-600 no-underline hover:text-gray-900 py-1" href="https://www.linkedin.com/in/prmane03/"><i class="fab fa-linkedin-in mr-1"></i> linkedin</a>
+            </li>
+            <li>
+              <a class="inline-block text-gray-600 no-underline hover:text-gray-900 py-1" href="https://www.instagram.com/prmane03/">
+                <i class="fab fa-instagram mr-1"></i> Instagram</a>
+            </li>
+          </ul>
         </div>
       </div>
-    </footer>
-    {% if request.session.isadmin %}
-    <script type="text/javascript">
-      function toggleModal(modalID) {
-        document.getElementById(modalID).classList.toggle("hidden");
-        document
-          .getElementById(modalID + "-backdrop")
-          .classList.toggle("hidden");
-        document.getElementById(modalID).classList.toggle("flex");
-        document.getElementById(modalID + "-backdrop").classList.toggle("flex");
-      }
-      function toggleUpdateBookModal(modalID, tr, booktype) {
-        document.getElementById(modalID).classList.toggle("hidden");
-        document
-          .getElementById(modalID + "-backdrop")
-          .classList.toggle("hidden");
-        document.getElementById(modalID).classList.toggle("flex");
-        document.getElementById(modalID + "-backdrop").classList.toggle("flex");
-        document.getElementById("updatemodalbookid").value =
-          tr.childNodes[1].innerText;
-        document.getElementById("updatemodalbookname").value =
-          tr.childNodes[3].innerText;
-        document.getElementById("updatemodalpublication").value =
-          tr.childNodes[5].innerText;
-        document.getElementById("updatemodalauthor").value =
-          tr.childNodes[7].innerText;
-        document.getElementById("updatemodalcategory").value =
-          tr.childNodes[9].innerText;
-        if (booktype == "book") {
-          document.getElementById("updatemodalcopies").value =
-            tr.childNodes[15].innerText;
-          document.getElementById("updatemodalebook").required = false;
-          document.getElementById("updatemodalcopies").required = true;
-          document.getElementById("updatemodalcopiesdiv").style.display =
-            "block";
-          document.getElementById("updatemodalebookdiv").style.display = "none";
-          document.getElementById("updatemodalisebook").value = "false";
-        } else {
-          document.getElementById("updatemodalcopies").required = false;
-          document.getElementById("updatemodalebook").required = true;
-          document.getElementById("updatemodalcopiesdiv").style.display =
-            "none";
-          document.getElementById("updatemodalebookdiv").style.display =
-            "block";
-          document.getElementById("updatemodalisebook").value = "true";
-        }
-      }
-      function toggleDeleteBookModal(modalID, tr) {
-        document.getElementById(modalID).classList.toggle("hidden");
-        document
-          .getElementById(modalID + "-backdrop")
-          .classList.toggle("hidden");
-        document.getElementById(modalID).classList.toggle("flex");
-        document.getElementById(modalID + "-backdrop").classList.toggle("flex");
-        document.getElementById("book_id1").value = tr.childNodes[1].innerText;
-      }
-    </script>
-    {% endif %}
-    <script>
-      /*Toggle dropdown list*/
-      /*https://gist.github.com/slavapas/593e8e50cf4cc16ac972afcbad4f70c8*/
+    </div>
+  </div>
+</footer>
 
-      var userMenuDiv = document.getElementById("userMenu");
-      var userMenu = document.getElementById("userButton");
+{% block script %}
+{% if request.session.isadmin %}
+<script type="text/javascript">
+  function toggleModal(modalID) {
+    document.getElementById(modalID).classList.toggle("hidden");
+    document
+      .getElementById(modalID + "-backdrop")
+      .classList.toggle("hidden");
+    document.getElementById(modalID).classList.toggle("flex");
+    document.getElementById(modalID + "-backdrop").classList.toggle("flex");
+  }
 
-      var navMenuDiv = document.getElementById("nav-content");
-      var navMenu = document.getElementById("nav-toggle");
+  function toggleUpdateBookModal(modalID, tr, booktype) {
+    document.getElementById(modalID).classList.toggle("hidden");
+    document
+      .getElementById(modalID + "-backdrop")
+      .classList.toggle("hidden");
+    document.getElementById(modalID).classList.toggle("flex");
+    document.getElementById(modalID + "-backdrop").classList.toggle("flex");
+    document.getElementById("updatemodalbookid").value =
+      tr.childNodes[1].innerText;
+    document.getElementById("updatemodalbookname").value =
+      tr.childNodes[3].innerText;
+    document.getElementById("updatemodalpublication").value =
+      tr.childNodes[5].innerText;
+    document.getElementById("updatemodalauthor").value =
+      tr.childNodes[7].innerText;
+    document.getElementById("updatemodalcategory").value =
+      tr.childNodes[9].innerText;
+    if (booktype == "book") {
+      document.getElementById("updatemodalcopies").value =
+        tr.childNodes[15].innerText;
+      document.getElementById("updatemodalebook").required = false;
+      document.getElementById("updatemodalcopies").required = true;
+      document.getElementById("updatemodalcopiesdiv").style.display =
+        "block";
+      document.getElementById("updatemodalebookdiv").style.display = "none";
+      document.getElementById("updatemodalisebook").value = "false";
+    } else {
+      document.getElementById("updatemodalcopies").required = false;
+      document.getElementById("updatemodalebook").required = true;
+      document.getElementById("updatemodalcopiesdiv").style.display =
+        "none";
+      document.getElementById("updatemodalebookdiv").style.display =
+        "block";
+      document.getElementById("updatemodalisebook").value = "true";
+    }
+  }
 
-      document.onclick = check;
-
-      function check(e) {
-        var target = (e && e.target) || (event && event.srcElement);
-
-        //User Menu
-        if (!checkParent(target, userMenuDiv)) {
-          // click NOT on the menu
-          if (checkParent(target, userMenu)) {
-            // click on the link
-            if (userMenuDiv.classList.contains("invisible")) {
-              userMenuDiv.classList.remove("invisible");
-            } else {
-              userMenuDiv.classList.add("invisible");
-            }
-          } else {
-            // click both outside link and outside menu, hide menu
-            userMenuDiv.classList.add("invisible");
-          }
-        }
-
-        //Nav Menu
-        if (!checkParent(target, navMenuDiv)) {
-          // click NOT on the menu
-          if (checkParent(target, navMenu)) {
-            // click on the link
-            if (navMenuDiv.classList.contains("hidden")) {
-              navMenuDiv.classList.remove("hidden");
-            } else {
-              navMenuDiv.classList.add("hidden");
-            }
-          } else {
-            // click both outside link and outside menu, hide menu
-            navMenuDiv.classList.add("hidden");
-          }
-        }
-      }
-
-      function checkParent(t, elm) {
-        while (t.parentNode) {
-          if (t == elm) {
-            return true;
-          }
-          t = t.parentNode;
-        }
-        return false;
-      }
-    </script>
-  </body>
-</html>
+  function toggleDeleteBookModal(modalID, tr) {
+    document.getElementById(modalID).classList.toggle("hidden");
+    document
+      .getElementById(modalID + "-backdrop")
+      .classList.toggle("hidden");
+    document.getElementById(modalID).classList.toggle("flex");
+    document.getElementById(modalID + "-backdrop").classList.toggle("flex");
+    document.getElementById("book_id1").value = tr.childNodes[1].innerText;
+  }
+</script>
+{% endif %}
+{% endblock %}

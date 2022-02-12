@@ -1,363 +1,185 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {% load static %}
-    <link href="{% static 'css/tailwind.min.css' %}" rel="stylesheet" />
-    {% comment %} filepickeer css {% endcomment %}
-    <link href="https://cdn.jsdelivr.net/npm/@tailwindcss/custom-forms@0.2.1/dist/custom-forms.css" rel="stylesheet" />
-    {% comment %} font awesome {% endcomment %}
-    <title>Book</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% block title %}
+Search Books
+{% endblock %}
 
-    <!-- loader css  -->
-    <style type="text/css">
-        @keyframes ldio-cy282x9qsxi-1 {
-            0% {
-                top: 9.262999999999998px;
-                height: 138.47400000000002px
-            }
-
-            50% {
-                top: 40.035000000000004px;
-                height: 76.93px
-            }
-
-            100% {
-                top: 40.035000000000004px;
-                height: 76.93px
-            }
+{% block style %}
+<!-- loader css  -->
+<style type="text/css">
+    @keyframes ldio-cy282x9qsxi-1 {
+        0% {
+            top: 9.262999999999998px;
+            height: 138.47400000000002px
         }
 
-        @keyframes ldio-cy282x9qsxi-2 {
-            0% {
-                top: 16.955999999999996px;
-                height: 123.08800000000001px
-            }
-
-            50% {
-                top: 40.035000000000004px;
-                height: 76.93px
-            }
-
-            100% {
-                top: 40.035000000000004px;
-                height: 76.93px
-            }
+        50% {
+            top: 40.035000000000004px;
+            height: 76.93px
         }
 
-        @keyframes ldio-cy282x9qsxi-3 {
-            0% {
-                top: 24.649000000000004px;
-                height: 107.702px
-            }
+        100% {
+            top: 40.035000000000004px;
+            height: 76.93px
+        }
+    }
 
-            50% {
-                top: 40.035000000000004px;
-                height: 76.93px
-            }
-
-            100% {
-                top: 40.035000000000004px;
-                height: 76.93px
-            }
+    @keyframes ldio-cy282x9qsxi-2 {
+        0% {
+            top: 16.955999999999996px;
+            height: 123.08800000000001px
         }
 
-        .ldio-cy282x9qsxi div {
-            position: absolute;
-            width: 18.84px
+        50% {
+            top: 40.035000000000004px;
+            height: 76.93px
         }
 
-        .ldio-cy282x9qsxi div:nth-child(1) {
-            left: 29.830000000000002px;
-            background: #e1bc29;
-            animation: ldio-cy282x9qsxi-1 1.075268817204301s cubic-bezier(0, 0.5, 0.5, 1) infinite;
-            animation-delay: -0.21505376344086022s
+        100% {
+            top: 40.035000000000004px;
+            height: 76.93px
+        }
+    }
+
+    @keyframes ldio-cy282x9qsxi-3 {
+        0% {
+            top: 24.649000000000004px;
+            height: 107.702px
         }
 
-        .ldio-cy282x9qsxi div:nth-child(2) {
-            left: 69.08px;
-            background: #e15554;
-            animation: ldio-cy282x9qsxi-2 1.075268817204301s cubic-bezier(0, 0.5, 0.5, 1) infinite;
-            animation-delay: -0.10752688172043011s
+        50% {
+            top: 40.035000000000004px;
+            height: 76.93px
         }
 
-        .ldio-cy282x9qsxi div:nth-child(3) {
-            left: 108.33px;
-            background: #4d9de0;
-            animation: ldio-cy282x9qsxi-3 1.075268817204301s cubic-bezier(0, 0.5, 0.5, 1) infinite;
-            animation-delay: undefineds
+        100% {
+            top: 40.035000000000004px;
+            height: 76.93px
         }
+    }
 
-        .loadingio-spinner-pulse-4p4kjtcdaqq {
-            width: 157px;
-            height: 157px;
-            display: inline-block;
-            overflow: hidden;
-            background: #ffffff;
-        }
+    .ldio-cy282x9qsxi div {
+        position: absolute;
+        width: 18.84px
+    }
 
-        .ldio-cy282x9qsxi {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform: translateZ(0) scale(1);
-            backface-visibility: hidden;
-            transform-origin: 0 0;
-            /* see note above */
-        }
+    .ldio-cy282x9qsxi div:nth-child(1) {
+        left: 29.830000000000002px;
+        background: #e1bc29;
+        animation: ldio-cy282x9qsxi-1 1.075268817204301s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+        animation-delay: -0.21505376344086022s
+    }
 
-        .ldio-cy282x9qsxi div {
-            box-sizing: content-box;
-        }
+    .ldio-cy282x9qsxi div:nth-child(2) {
+        left: 69.08px;
+        background: #e15554;
+        animation: ldio-cy282x9qsxi-2 1.075268817204301s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+        animation-delay: -0.10752688172043011s
+    }
 
-        /* generated by https://loading.io/ */
-    </style>
+    .ldio-cy282x9qsxi div:nth-child(3) {
+        left: 108.33px;
+        background: #4d9de0;
+        animation: ldio-cy282x9qsxi-3 1.075268817204301s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+        animation-delay: undefineds
+    }
 
-</head>
+    .loadingio-spinner-pulse-4p4kjtcdaqq {
+        width: 157px;
+        height: 157px;
+        display: inline-block;
+        overflow: hidden;
+        background: #ffffff;
+    }
 
-<body class="" style="">
+    .ldio-cy282x9qsxi {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transform: translateZ(0) scale(1);
+        backface-visibility: hidden;
+        transform-origin: 0 0;
+        /* see note above */
+    }
 
-    {% comment %} Nav Bar {% endcomment %}
-    <nav id="header" class="bg-white fixed w-full z-10 top-0 shadow">
-        <div class="w-full container mx-auto flex flex-wrap items-center mt-0 pt-3 pb-3 md:pb-0">
-            <div class="w-1/2 pl-2 md:pl-0">
-                <a class="text-gray-900 text-base xl:text-xl no-underline hover:no-underline font-bold" href="#">
-                    <i class="fas fa-sun text-pink-600 pr-3"></i> Dashboard
-                </a>
-            </div>
-            <div class="w-1/2 pr-0">
-                <div class="flex relative inline-block float-right">
-                    <div class="relative text-sm">
-                        <button id="userButton" class="flex items-center focus:outline-none mr-3">
-                            <img class="w-8 h-8 rounded-full mr-4" src="http://i.pravatar.cc/300" alt="Avatar of User" />
-                            <span class="hidden md:inline-block">Hi, {{User.Name}}</span>
-                            <svg class="pl-2 h-2" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 129 129" xmlns:xlink="http://www.w3.org/1999/xlink" enable-background="new 0 0 129 129">
-                                <g>
-                                    <path d="m121.3,34.6c-1.6-1.6-4.2-1.6-5.8,0l-51,51.1-51.1-51.1c-1.6-1.6-4.2-1.6-5.8,0-1.6,1.6-1.6,4.2 0,5.8l53.9,53.9c0.8,0.8 1.8,1.2 2.9,1.2 1,0 2.1-0.4 2.9-1.2l53.9-53.9c1.7-1.6 1.7-4.2 0.1-5.8z"></path>
-                                </g>
-                            </svg>
-                        </button>
-                        <div id="userMenu" class="bg-white rounded shadow-md mt-2 absolute mt-12 top-0 right-0 min-w-full overflow-auto z-30 invisible">
-                            <ul class="list-reset">
-                                <li>
-                                    <a href="/account" class="px-4 py-2 block text-gray-900 hover:bg-gray-400 no-underline hover:no-underline">My account</a>
-                                </li>
-                                <li>
-                                    <a href="#" class="px-4 py-2 block text-gray-900 hover:bg-gray-400 no-underline hover:no-underline">Notifications</a>
-                                </li>
-                                <li>
-                                    <hr class="border-t mx-2 border-gray-400" />
-                                </li>
-                                <li>
-                                    <a href="/logout" class="px-4 py-2 block text-gray-900 hover:bg-gray-400 no-underline hover:no-underline">Logout</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+    .ldio-cy282x9qsxi div {
+        box-sizing: content-box;
+    }
 
-                    <div class="block lg:hidden pr-4">
-                        <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-900 hover:border-teal-500 appearance-none focus:outline-none">
-                            <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <title>Menu</title>
-                                <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
+    /* generated by https://loading.io/ */
+</style>
+{% endblock %}
 
-            <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden lg:block mt-2 lg:mt-0 bg-white z-20" id="nav-content">
-                <ul class="list-reset lg:flex flex-1 items-center px-4 md:px-0">
-                    <li class="mr-6 my-2 md:my-0">
-                        <a href="/dashboard" class="block py-1 md:py-3 pl-1 align-middle text-gray-500 no-underline hover:text-gray-900 border-b-2 border-white hover:border-orange-600">
-                            <i class="fas fa-home fa-fw mr-3 text-pink-600"></i><span class="pb-1 md:pb-0 text-sm">Home</span>
-                        </a>
-                    </li>
-                    <li class="mr-6 my-2 md:my-0">
-                        <a href="" class="block py-1 md:py-3 pl-1 align-middle text-gray-500 no-underline hover:text-gray-900 border-b-2 border-white hover:border-pink-500">
-                            <i class="fas fa-tasks fa-fw mr-3"></i><span class="pb-1 md:pb-0 text-sm">All Books</span>
-                        </a>
-                    </li>
-                    <li class="mr-6 my-2 md:my-0">
-                        <a href="#" class="block py-1 md:py-3 pl-1 align-middle text-gray-500 no-underline hover:text-gray-900 border-b-2 border-white hover:border-purple-500">
-                            <i class="fa fa-envelope fa-fw mr-3"></i><span class="pb-1 md:pb-0 text-sm">Messages</span>
-                        </a>
-                    </li>
-                    <li class="mr-6 my-2 md:my-0">
-                        <a href="#" class="block py-1 md:py-3 pl-1 align-middle text-gray-500 no-underline hover:text-gray-900 border-b-2 border-white hover:border-green-500">
-                            <i class="fas fa-chart-area fa-fw mr-3"></i><span class="pb-1 md:pb-0 text-sm">Paid EBooks</span>
-                        </a>
-                    </li>
-                    <li class="mr-6 my-2 md:my-0">
-                        <a href="#" class="block py-1 md:py-3 pl-1 align-middle text-green-500 no-underline hover:text-gray-900 border-b-2 border-green-400 hover:border-green-400">
-                            <i class="fa fa-wallet fa-fw mr-3"></i><span class="pb-1 md:pb-0 text-sm">Profile</span>
-                        </a>
-                    </li>
-                </ul>
+{% block content %}
 
-                <div class="relative pull-right pl-4 pr-4 md:pr-0">
-                    <input type="search" placeholder="Search" class="w-full bg-gray-100 text-sm text-gray-800 transition border focus:outline-none focus:border-gray-700 rounded py-1 px-2 pl-10 appearance-none leading-normal" />
-                    <div class="absolute search-icon" style="top: 0.375rem; left: 1.75rem">
-                        <svg class="fill-current pointer-events-none text-gray-800 w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                            <path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"></path>
+<div class="bg-white pt-24 p-2" style="min-height:100vh">
+    <main class="my-8">
+        <div class="container mx-auto px-6">
+            <div class="flex">
+                <div class="relative mt-6 max-w-lg ml-auto">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                        <svg class="h-5 w-5 text-gray-500" viewBox="0 0 24 24" fill="none">
+                            <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
-                    </div>
+                    </span>
+
+                    <input class="w-full border rounded-md pl-10 pr-4 py-2 focus:border-blue-500 focus:outline-none focus:shadow-outline" type="text" id="searchIp" placeholder="Search Book">
                 </div>
+                <button class="bg-indigo-500 text-white mt-6 rounded-md p-2 mx-4 font-semibold" id="searchBtn">Search</button>
+                <hr class="my-3">
+            </div>
+            <div class="grid grid-cols-4 gap-4" id="book-results">
             </div>
         </div>
-    </nav>
-    <!-- End of Navbar -->
+    </main>
 
+</div>
 
-    <div class="bg-white pt-24">
-        <main class="my-8">
-            <div class="container mx-auto px-6">
-                <div class="flex">
-                    <div class="relative mt-6 max-w-lg ml-auto">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
-                            <svg class="h-5 w-5 text-gray-500" viewBox="0 0 24 24" fill="none">
-                                <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </span>
+{% endblock %}
 
-                        <input class="w-full border rounded-md pl-10 pr-4 py-2 focus:border-blue-500 focus:outline-none focus:shadow-outline" type="text" id="searchIp" placeholder="Search Book">
-                    </div>
-                    <button class="bg-indigo-500 text-white mt-6 rounded-md p-2 mx-4 font-semibold" id="searchBtn">Search</button>
-                    <hr class="my-3">
-                </div>
-                <div class="grid grid-cols-4 gap-4" id="book-results">
-                    <!-- <ul id="book-results" class="mt-4">
+{% block script %}
+<script>
+    var searchIp = document.getElementById("searchIp");
+    var searchBtn = document.getElementById("searchBtn");
+    searchBtn.addEventListener("click", () => {
+        getbooks(searchIp.value);
+    });
 
-                    </ul> -->
-                    <!-- <div class="min-h-screen bg-gray-100 flex items-center justify-center">
-                        <div class="bg-white rounded-xl overflow-hidden shadow-xl hover:scale-105 hover:shadow-2xl transform duration-500 cursor-pointer">
-                          <div class="p-4">
-                            <spna class="bg-red-500 py-2 px-4 text-sm font-semibold text-white rounded-full cursor-pointer">-30% Sale</spna>
-                            <h1 class="mt-4 text-3xl font-bold hover:underline cursor-pointer">Super Books</h1>
-                            <p class="mt-2 font-sans text-gray-700">by Diseño Constructivo</p>
-                          </div>
-                          <div class="relative">
-                            <img class="w-80" src="https://images.unsplash.com/photo-1571167530149-c1105da4c2c7?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=376&q=80" />
-                            <p class="absolute text-lg transform translate-x-20 -translate-y-24 bg-blue-600 text-white py-3 px-6 rounded-full cursor-pointer hover:scale-105 duration-500">Comprar ahora</p>
-                          </div>
-                        </div>
-                    </div> -->
-                </div>
-            </div>
-        </main>
+    async function getbooks(q) {
+        let url = "https://openlibrary.org/search.json?title=" + q;
+        var rescontainer = document.getElementById("book-results")
+        rescontainer.innerHTML = '<div class="text-center mt-6 col-span-4"><div class="loadingio-spinner-pulse-4p4kjtcdaqq"><div class="ldio-cy282x9qsxi"><div></div><div></div><div></div></div></div></div>'
+        await fetch(url).then((response) => {
 
-    </div>
-    <script>
-        var searchIp = document.getElementById("searchIp");
-        var searchBtn = document.getElementById("searchBtn");
-        searchBtn.addEventListener("click", () => {
-            getbooks(searchIp.value);
-        });
+            let data = response.json().then((res) => {
+                console.log(url);
+                try {
+                    rescontainer.innerHTML = ""
+                    console.log(res.docs[0].title);
+                    console.log(res.docs);
+                    for (let i = 0; i < 10; i++) {
 
-        async function getbooks(q) {
-            let url = "https://openlibrary.org/search.json?title=" + q;
-            var rescontainer = document.getElementById("book-results")
-            rescontainer.innerHTML = '<div class="text-center mt-6 col-span-4"><div class="loadingio-spinner-pulse-4p4kjtcdaqq"><div class="ldio-cy282x9qsxi"><div></div><div></div><div></div></div></div></div>'
-            await fetch(url).then((response) => {
-
-                let data = response.json().then((res) => {
-                    console.log(url);
-                    try {
-                        rescontainer.innerHTML = ""
-                        console.log(res.docs[0].title);
-                        console.log(res.docs);
-                        for (let i = 0; i < 10; i++) {
-
-                            let book = '<div class=" bg-white flex items-center justify-center"><div class="bg-white rounded-xl overflow-hidden shadow-xl hover:scale-105 hover:shadow-2xl transform duration-500 cursor-pointer"><div class="p-4"><spna class="bg-red-500 py-2 px-4 text-sm font-semibold text-white rounded-full cursor-pointer">-30% Sale</spna><h1 class="mt-4 text-3xl font-bold hover:underline cursor-pointer">' + res.docs[i].title + '</h1><p class="mt-2 font-sans text-gray-700">by Diseño Constructivo</p></div><div class="relative"><img class="w-80" src="https://images.unsplash.com/photo-1571167530149-c1105da4c2c7?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=376&q=80" /><p class="absolute text-lg transform translate-x-20 -translate-y-24 bg-blue-600 text-white py-3 px-6 rounded-full cursor-pointer hover:scale-105 duration-500">Comprar ahora</p></div></div></div> '
-                            // var li = document.createElement('li');
-                            // li.classList.add("p-2", "bg-gray-200", "shadow-lg", "my-1")
-                            // li.innerHTML = i + 1 + ". <span class='font-bold mr-4'>" + res.docs[i].title + "</span><span class='text-gray-800'> by " + res.docs[i].author_name + " [ " + res.docs[i].language + " ]</span>"
-                            // list.appendChild(li)
-                            rescontainer.innerHTML += book;
+                        let book = ''
+                        if (res.docs[i].isbn) {
+                            book = '<div class=" bg-white flex items-center justify-center"><div class="bg-white rounded-xl overflow-hidden shadow-xl hover:scale-105 hover:shadow-2xl transform duration-500 cursor-pointer"><div class="p-4"><h1 class="mt-4 text-lg h-12 font-bold hover:underline cursor-pointer">' + res.docs[i].title + '</h1><p class="mt-2 font-sans text-gray-700 text-sm">by ' + res.docs[i].author_name + '</p></div><div class="relative"><img class="w-80" style="height:400px" src="https://covers.openlibrary.org/b/isbn/' + res.docs[i].isbn[0] + '-L.jpg" onerror=this.src="https://images.unsplash.com/photo-1571167530149-c1105da4c2c7?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=376&q=80"/><p class="absolute text-lg transform translate-x-20 -translate-y-24 bg-blue-600 text-white py-3 px-6 rounded-full cursor-pointer hover:scale-105 duration-500">Check Book</p></div></div></div> '
+                        } else {
+                            book = '<div class=" bg-white flex items-center justify-center"><div class="bg-white rounded-xl overflow-hidden shadow-xl hover:scale-105 hover:shadow-2xl transform duration-500 cursor-pointer"><div class="p-4"><h1 class="mt-4 text-lg h-12 font-bold hover:underline cursor-pointer">' + res.docs[i].title + '</h1><p class="mt-2 font-sans text-gray-700 text-sm">by ' + res.docs[i].author_name + '</p></div><div class="relative"><img class="w-80" style="height:400px" src="https://images.unsplash.com/photo-1571167530149-c1105da4c2c7?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=376&q=80" /><p class="absolute text-lg transform translate-x-20 -translate-y-24 bg-blue-600 text-white py-3 px-6 rounded-full cursor-pointer hover:scale-105 duration-500">Check Book</p></div></div></div> '
                         }
-                    } catch (error) {
-                        console.log(error);
+                        // var li = document.createElement('li');
+                        // li.classList.add("p-2", "bg-gray-200", "shadow-lg", "my-1")
+                        // li.innerHTML = i + 1 + ". <span class='font-bold mr-4'>" + res.docs[i].title + "</span><span class='text-gray-800'> by " + res.docs[i].author_name + " [ " + res.docs[i].language + " ]</span>"
+                        // list.appendChild(li)
+                        rescontainer.innerHTML += book;
                     }
-                });
-
-            }).catch((error) => {
-                // handle the error
-                console.log(error);
+                } catch (error) {
+                    console.log(error);
+                }
             });
-        }
-    </script>
-    <script>
-        //{% comment %} Toggle Modal  {% endcomment %}
-        function toggleModal(modalID) {
-            document.getElementById(modalID).classList.toggle("hidden");
-            document
-                .getElementById(modalID + "-backdrop")
-                .classList.toggle("hidden");
-            document.getElementById(modalID).classList.toggle("flex");
-            document.getElementById(modalID + "-backdrop").classList.toggle("flex");
-        }
 
-        /*Toggle dropdown list*/
-        /*https://gist.github.com/slavapas/593e8e50cf4cc16ac972afcbad4f70c8*/
-
-        var userMenuDiv = document.getElementById("userMenu");
-        var userMenu = document.getElementById("userButton");
-
-        var navMenuDiv = document.getElementById("nav-content");
-        var navMenu = document.getElementById("nav-toggle");
-
-        document.onclick = check;
-
-        function check(e) {
-            var target = (e && e.target) || (event && event.srcElement);
-
-            //User Menu
-            if (!checkParent(target, userMenuDiv)) {
-                // click NOT on the menu
-                if (checkParent(target, userMenu)) {
-                    // click on the link
-                    if (userMenuDiv.classList.contains("invisible")) {
-                        userMenuDiv.classList.remove("invisible");
-                    } else {
-                        userMenuDiv.classList.add("invisible");
-                    }
-                } else {
-                    // click both outside link and outside menu, hide menu
-                    userMenuDiv.classList.add("invisible");
-                }
-            }
-
-            //Nav Menu
-            if (!checkParent(target, navMenuDiv)) {
-                // click NOT on the menu
-                if (checkParent(target, navMenu)) {
-                    // click on the link
-                    if (navMenuDiv.classList.contains("hidden")) {
-                        navMenuDiv.classList.remove("hidden");
-                    } else {
-                        navMenuDiv.classList.add("hidden");
-                    }
-                } else {
-                    // click both outside link and outside menu, hide menu
-                    navMenuDiv.classList.add("hidden");
-                }
-            }
-        }
-
-        function checkParent(t, elm) {
-            while (t.parentNode) {
-                if (t == elm) {
-                    return true;
-                }
-                t = t.parentNode;
-            }
-            return false;
-        }
-    </script>
-</body>
-
-</html>
+        }).catch((error) => {
+            // handle the error
+            console.log(error);
+        });
+    }
+</script>
+{% endblock %}
