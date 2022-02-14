@@ -2,6 +2,9 @@
 
 ### Todo
 
+- change app name
+- work on library app
+- implement djnago login system
 - Make view Page For Books
 - make Search Books page Trough Apis
 - Use google play book apis + openlibrary apis
