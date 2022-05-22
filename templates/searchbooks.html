@@ -115,6 +115,7 @@ Search Books
 <div class="bg-white pt-24 p-2" style="min-height:100vh">
     <main class="my-8">
         <div class="container mx-auto px-6">
+            <p class="text-right text-2xl text-blue-600 font-semibold mr-8">Search Book Online</p>
             <div class="flex">
                 <div class="relative mt-6 max-w-lg ml-auto">
                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
@@ -127,6 +128,9 @@ Search Books
                 </div>
                 <button class="bg-indigo-500 text-white mt-6 rounded-md p-2 mx-4 font-semibold" id="searchBtn">Search</button>
                 <hr class="my-3">
+            </div>
+            <!-- to number of results  -->
+            <div class="my-2 text-center text-red-600 hidden" id="resInfo">
             </div>
             <div class="grid grid-cols-4 gap-4" id="book-results">
             </div>
@@ -142,6 +146,8 @@ Search Books
     var searchIp = document.getElementById("searchIp");
     var searchBtn = document.getElementById("searchBtn");
     searchBtn.addEventListener("click", () => {
+        var resInfo = document.getElementById("resInfo");
+        resInfo.classList.add('hidden');
         getbooks(searchIp.value);
     });
 
@@ -157,13 +163,20 @@ Search Books
                     rescontainer.innerHTML = ""
                     console.log(res.docs[0].title);
                     console.log(res.docs);
+
+                    console.log(res.docs.length);
+                    // if(res.docs.length==0){
+                        var resInfo = document.getElementById("resInfo");
+                        resInfo.classList.remove('hidden');
+                        resInfo.innerHTML= res.docs.length+' results found ...';
+                    // }
                     for (let i = 0; i < 10; i++) {
 
-                        let book = ''
+                        let book = '';
                         if (res.docs[i].isbn) {
-                            book = '<div class=" bg-white flex items-center justify-center"><div class="bg-white rounded-xl overflow-hidden shadow-xl hover:scale-105 hover:shadow-2xl transform duration-500 cursor-pointer"><div class="p-4"><h1 class="mt-4 text-lg h-12 font-bold hover:underline cursor-pointer">' + res.docs[i].title + '</h1><p class="mt-2 font-sans text-gray-700 text-sm">by ' + res.docs[i].author_name + '</p></div><div class="relative"><img class="w-80" style="height:400px" src="https://covers.openlibrary.org/b/isbn/' + res.docs[i].isbn[0] + '-L.jpg" onerror=this.src="https://images.unsplash.com/photo-1571167530149-c1105da4c2c7?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=376&q=80"/><p class="absolute text-lg transform translate-x-20 -translate-y-24 bg-blue-600 text-white py-3 px-6 rounded-full cursor-pointer hover:scale-105 duration-500">Check Book</p></div></div></div> '
+                            book = '<div class=" bg-white flex items-center justify-center"><div class="bg-white rounded-xl overflow-hidden shadow-xl hover:scale-105 hover:shadow-2xl transform duration-500 cursor-pointer"><div class="p-4"><h1 class="mt-4 text-lg h-12 font-bold hover:underline cursor-pointer">' + res.docs[i].title + '</h1><p class="mt-2 font-sans text-gray-700 text-sm">by ' + res.docs[i].author_name + '</p></div><div class="relative"><img class="w-80" style="height:400px" src="https://covers.openlibrary.org/b/isbn/' + res.docs[i].isbn[0] + '-L.jpg" onerror=this.src="https://images.unsplash.com/photo-1571167530149-c1105da4c2c7?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=376&q=80"/></div></div></div> '
                         } else {
-                            book = '<div class=" bg-white flex items-center justify-center"><div class="bg-white rounded-xl overflow-hidden shadow-xl hover:scale-105 hover:shadow-2xl transform duration-500 cursor-pointer"><div class="p-4"><h1 class="mt-4 text-lg h-12 font-bold hover:underline cursor-pointer">' + res.docs[i].title + '</h1><p class="mt-2 font-sans text-gray-700 text-sm">by ' + res.docs[i].author_name + '</p></div><div class="relative"><img class="w-80" style="height:400px" src="https://images.unsplash.com/photo-1571167530149-c1105da4c2c7?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=376&q=80" /><p class="absolute text-lg transform translate-x-20 -translate-y-24 bg-blue-600 text-white py-3 px-6 rounded-full cursor-pointer hover:scale-105 duration-500">Check Book</p></div></div></div> '
+                            book = '<div class=" bg-white flex items-center justify-center"><div class="bg-white rounded-xl overflow-hidden shadow-xl hover:scale-105 hover:shadow-2xl transform duration-500 cursor-pointer"><div class="p-4"><h1 class="mt-4 text-lg h-12 font-bold hover:underline cursor-pointer">' + res.docs[i].title + '</h1><p class="mt-2 font-sans text-gray-700 text-sm">by ' + res.docs[i].author_name + '</p></div><div class="relative"><img class="w-80" style="height:400px" src="https://images.unsplash.com/photo-1571167530149-c1105da4c2c7?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=376&q=80" /></div></div></div> '
                         }
                         // var li = document.createElement('li');
                         // li.classList.add("p-2", "bg-gray-200", "shadow-lg", "my-1")
